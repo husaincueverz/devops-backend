@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import datetime
@@ -8,7 +9,11 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/flaskreact'
+MYSQL_HOST = os.getenv('MYSQL_HOST', 'my-mysql.default.svc.cluster.local')
+MYSQL_DATABASE = os.getenv('MYSQL_DATABASE', 'flaskreact')
+MYSQL_USER = os.getenv('MYSQL_USER', 'helmdb')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'Team1234#')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DATABASE}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -78,4 +83,4 @@ def add_article():
     return article_schema.jsonify(articles)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
